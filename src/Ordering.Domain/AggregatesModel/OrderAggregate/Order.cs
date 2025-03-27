@@ -138,7 +138,17 @@ public class Order
         Description = "The order was shipped.";
         AddDomainEvent(new OrderShippedDomainEvent(this));
     }
+    public void SetCompletedStatus()
+    {
+        if (OrderStatus != OrderStatus.Shipped)
+        {
+            StatusChangeException(OrderStatus.Completed);
+        }
 
+        OrderStatus = OrderStatus.Completed;
+        Description = "The order was completed.";
+        AddDomainEvent(new OrderCompletedDomainEvent(this));
+    }
     public void SetCancelledStatus()
     {
         if (OrderStatus == OrderStatus.Paid ||

@@ -83,6 +83,37 @@ public class OrdersWebApiTest
     }
 
     [TestMethod]
+    public async Task Complete_order_with_requestId_success()
+    {
+        // Arrange
+        _mediatorMock.Send(Arg.Any<IdentifiedCommand<CompleteOrderCommand, bool>>(), default)
+            .Returns(Task.FromResult(true));
+
+        // Act
+        var orderServices = new OrderServices(_mediatorMock, _orderQueriesMock, _identityServiceMock, _loggerMock);
+        var result = await OrdersApi.CompleteOrderAsync(Guid.NewGuid(), new CompleteOrderCommand(1), orderServices);
+
+        // Assert
+        Assert.IsInstanceOfType<Ok>(result.Result);
+
+    }
+
+    [TestMethod]
+    public async Task Complete_order_bad_request()
+    {
+        // Arrange
+        _mediatorMock.Send(Arg.Any<IdentifiedCommand<CreateOrderCommand, bool>>(), default)
+            .Returns(Task.FromResult(true));
+
+        // Act
+        var orderServices = new OrderServices(_mediatorMock, _orderQueriesMock, _identityServiceMock, _loggerMock);
+        var result = await OrdersApi.CompleteOrderAsync(Guid.Empty, new CompleteOrderCommand(1), orderServices);
+
+        // Assert
+        Assert.IsInstanceOfType<BadRequest<string>>(result.Result);
+    }
+
+    [TestMethod]
     public async Task Get_orders_success()
     {
         // Arrange
